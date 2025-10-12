@@ -2,6 +2,7 @@ import aiohttp
 from aiohttp import web
 from aiohttp_cors import setup as cors_setup, ResourceOptions
 import asyncio
+import os
 from database import db
 from config import Config
 
@@ -27,6 +28,10 @@ class NicknameMakerAPI:
         # ルート設定
         self.app.router.add_get('/nickname', self.get_random_nickname)
         self.app.router.add_get('/health', self.health_check)
+        
+        # フロントエンド用の静的ファイル配信
+        self.app.router.add_get('/', self.serve_index)
+        self.app.router.add_static('/', path='../frontend', name='static')
         
         # CORSをすべてのルートに適用
         for route in list(self.app.router.routes()):
@@ -57,6 +62,17 @@ class NicknameMakerAPI:
             'status': 'healthy',
             'message': 'あだ名メーカーAPIは正常に動作しています'
         })
+    
+    async def serve_index(self, request):
+        """フロントエンドのindex.htmlを配信"""
+        try:
+            # フロントエンドのindex.htmlを読み込み
+            frontend_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'index.html')
+            with open(frontend_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return web.Response(text=content, content_type='text/html')
+        except FileNotFoundError:
+            return web.Response(text="<h1>フロントエンドファイルが見つかりません</h1>", content_type='text/html')
 
 async def init_database():
     """データベースを初期化"""
@@ -68,7 +84,7 @@ async def init_database():
         print(f"データベース初期化エラー: {e}")
         raise
 
-async def cleanup_database():
+async def cleanup_database(app):
     """データベース接続をクリーンアップ"""
     await db.close_pool()
 
@@ -91,9 +107,11 @@ def main():
     
     print(f"あだ名メーカーAPIサーバーを開始します...")
     print(f"サーバーアドレス: http://{config.HOST}:{config.PORT}")
+    print(f"フロントエンド: http://localhost:{config.PORT}")
     print(f"エンドポイント:")
-    print(f"  POST /generate-nickname - あだ名生成")
+    print(f"  GET  /nickname - ランダムなあだ名取得")
     print(f"  GET  /health - ヘルスチェック")
+    print(f"  GET  / - フロントエンド表示")
     
     # サーバー起動
     web.run_app(create_app(), host=config.HOST, port=config.PORT)

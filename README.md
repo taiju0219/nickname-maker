@@ -73,6 +73,7 @@ DB_PASSWORD=your_password_here
 ```bash
 python main.py
 ```
+- バックエンド側でポート接続を自動化しているので、バックエンド、フロントエンド、データベースのそれぞれでWebサーバを立ち上げずとも、main.pyを起動した後に『localhost:8000』に接続するとindex.htmlが表示されます
 
 ## APIエンドポイント
 
