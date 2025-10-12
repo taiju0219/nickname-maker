@@ -3,6 +3,7 @@ from aiohttp import web
 from aiohttp_cors import setup as cors_setup, ResourceOptions
 import asyncio
 import os
+import json
 from database import db
 from config import Config
 
@@ -45,23 +46,42 @@ class NicknameMakerAPI:
             # ランダムなあだ名を取得
             nickname = await db.get_random_nickname()
             
-            return web.json_response({
+            # 日本語対応のJSONレスポンス
+            json_data = json.dumps({
                 'nickname': nickname
-            })
+            }, ensure_ascii=False)
+            
+            return web.Response(
+                text=json_data,
+                content_type='application/json',
+                charset='utf-8'
+            )
             
         except Exception as e:
             print(f"エラー: {e}")
-            return web.json_response(
-                {'error': 'サーバー内部エラーが発生しました'}, 
+            error_data = json.dumps({
+                'error': 'サーバー内部エラーが発生しました'
+            }, ensure_ascii=False)
+            
+            return web.Response(
+                text=error_data,
+                content_type='application/json',
+                charset='utf-8',
                 status=500
             )
     
     async def health_check(self, request):
         """ヘルスチェックエンドポイント"""
-        return web.json_response({
+        health_data = json.dumps({
             'status': 'healthy',
             'message': 'あだ名メーカーAPIは正常に動作しています'
-        })
+        }, ensure_ascii=False)
+        
+        return web.Response(
+            text=health_data,
+            content_type='application/json',
+            charset='utf-8'
+        )
     
     async def serve_index(self, request):
         """フロントエンドのindex.htmlを配信"""
