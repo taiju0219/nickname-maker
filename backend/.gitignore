@@ -1,0 +1,15 @@
+# Pythonが自動生成するキャッシュファイル
+__pycache__/
+*.pyc
+
+# 秘密情報（パスワードなど）を書く.envファイル
+# .env.example はOK
+.env
+
+# 今回問題になったインストーラースクリプト
+get-pip.py
+get-pip
+
+# OSが自動生成するシステムファイル
+.DS_Store
+Thumbs.db
