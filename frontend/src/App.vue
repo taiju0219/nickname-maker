@@ -12,7 +12,7 @@ const getNickname = async() => {
     return
   }
   try {
-    const response = await fetch ('https://localhost:8000/nickname')
+    const response = await fetch ('http://localhost:8000/nickname')
     const data: NicknameResponse = await response.json()
     title.value = data.nickname
     nickname.value = `${title.value} ${userName.value}`

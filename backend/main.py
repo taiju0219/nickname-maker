@@ -87,7 +87,7 @@ class NicknameMakerAPI:
         """フロントエンドのindex.htmlを配信"""
         try:
             # フロントエンドのindex.htmlを読み込み
-            frontend_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'App.vue')
+            frontend_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'index.html')
             with open(frontend_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             return web.Response(text=content, content_type='text/html')
